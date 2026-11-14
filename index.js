@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors"
-import apiRouterArtificialInteligence from "../server/src/router/ai.route.js";
+import apiRouterArtificialInteligence from "./src/router/ai.route.js";
 const app = express()
 const port = 3000
 app.use(express.json())
