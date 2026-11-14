@@ -1,7 +1,8 @@
-const express = require("express");
-const { AiController } = require("../controller/ai.controller");
-const AiRouter = express.Router()
+import express from "express"
+import AiController from "../controller/ai.controller.js"
+const apiRouterArtificialInteligence = express.Router()
 
-AiRouter.post("/generate", AiController)
+apiRouterArtificialInteligence.post("/generate", AiController)
 
-module.exports = AiRouter
+
+export default apiRouterArtificialInteligence

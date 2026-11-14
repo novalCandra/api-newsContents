@@ -1,6 +1,5 @@
-require("dotenv").config()
-const OpenAI = require("openai");
-
+import 'dotenv/config'
+import { OpenAI } from "openai";
 const openai = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",
     apiKey: process.env.OPENROUTER_API_KEY
@@ -30,7 +29,7 @@ function parseJson(raw) {
 }
 
 
-async function responseAiService(articleText, tone) {
+export async function responseAiService(articleText, tone) {
     const requestAi = await openai.chat.completions.create({
         model: "inclusionai/ling-3.2-flash:free",
         messages: [
@@ -42,6 +41,4 @@ async function responseAiService(articleText, tone) {
     return parseJson(requestAi.choices[0].message.content ?? "{}")
 }
 
-module.exports = {
-    responseAiService
-}
+

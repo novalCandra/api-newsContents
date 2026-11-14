@@ -1,7 +1,7 @@
-const { JSDOM } = require('jsdom');
-const { Readability  } = require("@mozilla/readability");
 
-async function extractArticle(url) {
+import { JSDOM } from 'jsdom';
+import { Readability } from "@mozilla/readability"
+export async function extractArticle(url) {
     let parsed
     try {
         parsed = new URL(url);
@@ -36,5 +36,3 @@ async function extractArticle(url) {
         wordCount: textContent.split(/\s+/).length
     }
 }
-
-module.exports = { extractArticle }
