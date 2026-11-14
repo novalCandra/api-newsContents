@@ -1,10 +1,11 @@
-import extractArticle from "../service/ai.extract.js"
-import responseAiService from "../service/ai.service.js"
+import { ExtractArticle } from "../service/ai.extract";
+import { ResponseAiService } from "../service/ai.service";
+
 const AiController = async (req, res) => {
     try {
         const { url, tone = "casual" } = req.body;
-        const article = extractArticle(url)
-        const createArticle = responseAiService(article.textContent.slice(0, 2000), tone);
+        const article = await ExtractArticle(url)
+        const createArticle = await ResponseAiService(article.textContent.slice(0, 2000), tone);
         return res.status(201).json({
             status: true,
             message: "success extract article",

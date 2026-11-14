@@ -1,7 +1,7 @@
 import { parseHTML } from "linkedom";
 import { Readability } from "@mozilla/readability";
 
-export async function extractArticle(url) {
+export async function ExtractArticle(url) {
     let parsed;
     try {
         parsed = new URL(url);
