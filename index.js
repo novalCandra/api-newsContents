@@ -14,3 +14,5 @@ app.use("/api", apiRouterArtificialInteligence)
 app.listen(port, () => {
     console.log(`Back end berjalan pada port : ${port}`)
 })
+
+export default app
