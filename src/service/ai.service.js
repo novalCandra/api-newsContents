@@ -1,9 +1,5 @@
 import 'dotenv/config'
 import { OpenAI } from "openai";
-const openai = new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: process.env.OPENROUTER_API_KEY
-})
 
 const systemPromptAiModel = `
 You are an expert Data Writer, Investigative Content Specialist, and Data Analyst with an extensive portfolio in synthesizing factual reports, raw statistics, and breaking news into authoritative, high-impact publications. Your specialty is merging multiple news sources into a cohesive, data-driven narrative without ever distorting the facts.
@@ -21,24 +17,46 @@ I will provide you with a collection of existing news stories alongside several 
 - **Contextualize, Don't Fabricate:** Present numbers clearly (e.g., "7 dari 10 responden" or "meningkat sebesar 45%") and explain *why* those metrics matter using strictly the cause-and-effect relationships documented in the texts.
 - **Executive Summary ("summary"):** Strictly 1–2 ultra-concise, high-impact sentences (maximum 35 words). Focus ONLY on the single overarching finding or headline metric across the stories and the primary conclusion—eliminate all filler words and secondary details.
 - **Detailed Key Findings ("keyPoints"):** Provide 4–5 comprehensive analytical bullet points (2–3 sentences per point). Each point must unpack specific statistics, exact timeframes or comparisons, methodological context, and the concrete implications explicitly reported in the source articles.
+
+Return ONLY a valid JSON object. No markdown, no headings, no code fences, no text before or after.
+Use exactly this structure:
+{
+  "summary": "string, max 35 words",
+  "keyPoints": ["string", "string", "string", "string"]
+}
 `
+
+let client;
+function getClient() {
+    if (!process.env.OPENROUTER_API_KEY) throw new Error("MISSING_API_KEY");
+    return (client ??= new OpenAI({
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: process.env.OPENROUTER_API_KEY,
+    }));
+}
 
 function parseJson(raw) {
     const cleaned = raw.replace(/```json|```/g, "").trim()
-    return JSON.parse(cleaned)
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start === -1 || end === -1) throw new Error("AI_INVALID_JSON");
+    try {
+        return JSON.parse(cleaned.slice(start, end + 1));
+    } catch {
+        throw new Error("AI_INVALID_JSON");
+    }
 }
 
-
 export async function ResponseAiService(articleText, tone) {
-    const requestAi = await openai.chat.completions.create({
+    const requestAi = await getClient().chat.completions.create({
         model: "inclusionai/ling-3.2-flash:free",
         messages: [
             { role: "system", content: systemPromptAiModel },
             { role: "user", content: `Tone: ${tone}\nArticle:\n${articleText}` },
         ],
-        response_format: { type: "json_object" }
-    })
-    return parseJson(requestAi.choices[0].message.content ?? "{}")
+        response_format: { type: "json_object" },
+        provider: { require_parameters: true }
+    });
+    return parseJson(requestAi.choices[0].message.content ?? "{}");
 }
-
 
