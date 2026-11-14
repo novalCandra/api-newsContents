@@ -1,5 +1,9 @@
 import 'dotenv/config'
 import { OpenAI } from "openai";
+const openai = new OpenAI({
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey: process.env.OPENROUTER_API_KEY
+})
 
 const systemPromptAiModel = `
 You are an expert Data Writer, Investigative Content Specialist, and Data Analyst with an extensive portfolio in synthesizing factual reports, raw statistics, and breaking news into authoritative, high-impact publications. Your specialty is merging multiple news sources into a cohesive, data-driven narrative without ever distorting the facts.
@@ -19,24 +23,22 @@ I will provide you with a collection of existing news stories alongside several 
 - **Detailed Key Findings ("keyPoints"):** Provide 4–5 comprehensive analytical bullet points (2–3 sentences per point). Each point must unpack specific statistics, exact timeframes or comparisons, methodological context, and the concrete implications explicitly reported in the source articles.
 `
 
-let client;
-function getClient() {
-    if (!process.env.OPENROUTER_API_KEY) throw new Error("MISSING_API_KEY");
-    return (client ??= new OpenAI({
-        baseURL: "https://openrouter.ai/api/v1",
-        apiKey: process.env.OPENROUTER_API_KEY,
-    }));
+function parseJson(raw) {
+    const cleaned = raw.replace(/```json|```/g, "").trim()
+    return JSON.parse(cleaned)
 }
 
+
 export async function ResponseAiService(articleText, tone) {
-    const requestAi = await getClient().chat.completions.create({
+    const requestAi = await openai.chat.completions.create({
         model: "inclusionai/ling-3.2-flash:free",
         messages: [
             { role: "system", content: systemPromptAiModel },
             { role: "user", content: `Tone: ${tone}\nArticle:\n${articleText}` },
         ],
-        response_format: { type: "json_object" },
-    });
-    return parseJson(requestAi.choices[0].message.content ?? "{}");
+        response_format: { type: "json_object" }
+    })
+    return parseJson(requestAi.choices[0].message.content ?? "{}")
 }
+
 

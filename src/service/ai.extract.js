@@ -1,12 +1,12 @@
-import { parseHTML } from "linkedom";
-import { Readability } from "@mozilla/readability";
-
+import jsdom from "jsdom";
+const { JSDOM } = jsdom;
+import { Readability } from "@mozilla/readability"
 export async function ExtractArticle(url) {
-    let parsed;
+    let parsed
     try {
         parsed = new URL(url);
     } catch (error) {
-        throw new Error("INVALID_URL");
+        throw new Error("INVALID_URL")
     }
 
     if (!["http:", "https:"].includes(parsed.protocol)) throw new Error("INVALID_URL");
@@ -22,9 +22,8 @@ export async function ExtractArticle(url) {
     if (!res.ok) throw new Error("FETCHING_FAILED");
     const html = await res.text();
 
-    // CHANGED: linkedom instead of JSDOM
-    const { document } = parseHTML(html);
-    const article = new Readability(document).parse();
+    const dom = new JSDOM(html, { url });
+    const article = new Readability(dom.window.document).parse();
     if (!article) throw new Error("NO_ARTICLE_FOUND");
 
     const textContent = article.textContent.trim();
@@ -35,5 +34,5 @@ export async function ExtractArticle(url) {
         excerpt: article.excerpt,
         textContent,
         wordCount: textContent.split(/\s+/).length
-    };
+    }
 }
