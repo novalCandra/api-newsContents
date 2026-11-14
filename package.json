@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
     "@openrouter/sdk": "^1.5.93",
