@@ -1,5 +1,5 @@
-import ExtractArticle from "./service/ai.extract";
-import ResponseAiService from "./service/ai.service";
+import ExtractArticle from "../../src/service/ai.extract.js";
+import ResponseAiService from "../../src/service/ai.service.js";
 
 const AiController = async (req, res) => {
     try {
