@@ -31,9 +31,8 @@ function parseJson(raw) {
 
 
 async function responseAiService(articleText, tone) {
-    console.time("llm")
     const requestAi = await openai.chat.completions.create({
-        model: "openrouter/free",
+        model: "inclusionai/ling-3.2-flash:free",
         messages: [
             { role: "system", content: systemPromptAiModel },
             { role: "user", content: `Tone: ${tone}\nArticle:\n${articleText}` },
