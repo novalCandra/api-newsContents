@@ -55,6 +55,7 @@ export async function ResponseAiService(articleText, tone) {
             { role: "user", content: `Tone: ${tone}\nArticle:\n${articleText}` },
         ],
         response_format: { type: "json_object" },
+        max_token: 600,
         provider: { require_parameters: true }
     });
     return parseJson(requestAi.choices[0].message.content ?? "{}");
