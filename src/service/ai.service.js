@@ -72,7 +72,7 @@ function parseJson(raw) {
 
 export async function ResponseAiService(articleText, tone) {
   const requestAi = await getClient().chat.completions.create({
-    model: "inclusionai/ling-3.2-flash:free",
+    model: "openrouter/free",
     messages: [
       { role: "system", content: systemPromptAiModel },
       { role: "user", content: `Tone: ${tone} \nArticle: \n${articleText} ` },
